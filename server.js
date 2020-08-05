@@ -9,6 +9,7 @@ app.set('view engine', 'html');
 
 global.bid=require('./Bid.class');
 global.timer=0;
+global.currentPrice=2000;
 app.get('/', function (req, res) {
   res.render("index.html");
 })
@@ -19,13 +20,27 @@ app.get('/placebid', function (req, res) {
     });
     var bidderName=req.query.bidderName;
     var amount=+req.query.amount;
-    global.bid.name=bidderName;
-    global.bid.amount=amount;
-    // 输出 JSON 格式
-    response = {
+    
+    var response;
+    if(amount>global.currentPrice)
+    {
+      global.bid.name=bidderName;
+      global.bid.amount=amount;
+      setTimeout(setTimer, 1000);
+      // response JSON 
+      response = {
+        success:true,
         result:("Place bid success"+bid.amount+bid.name)
-    };
-    setTimeout(setTimer, 1000);
+      };
+    }else{
+      // response JSON 
+      response = {
+        success:false,
+        result:("Bid should not less than starting bid!")
+      };
+    }
+    
+    
     res.end(JSON.stringify(response));
  })
  app.get('/getBidder', function (req, res) {
